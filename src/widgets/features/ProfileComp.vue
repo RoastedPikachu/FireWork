@@ -29,7 +29,7 @@
 
 <script lang="ts">
   import { defineComponent } from 'vue';
-  import { ref, onMounted } from 'vue';
+  import { ref } from 'vue';
 
   export default defineComponent({
     name: 'ProfileComp',
@@ -69,6 +69,7 @@
     flex-wrap: wrap;
     width: 100%;
     height: 350px;
+    background-color: #ffffff;
     border: 1px solid #43455d;
     border-radius: 30px;
     #Profile_bgImage {
@@ -112,6 +113,7 @@
       p:first-child {
         color: #070928;
         font-size: 16px;
+        font-weight: 500;
       }
       p:last-child {
         color: rgba(7, 9, 40, 0.75);
@@ -131,6 +133,7 @@
         width: 50%;
         color: #070928;
         font-size: 16px;
+        font-weight: 500;
         text-align: center;
       }
       p:last-child {

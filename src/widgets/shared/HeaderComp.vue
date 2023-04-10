@@ -3,7 +3,7 @@
     <img src="@/assets/FireWork_logo.svg" alt="FireWork">
     <div id="inputBlock">
       <img src="@/assets/search_icon.svg" alt="search">
-      <input placeholder="Найти заказчика / исполнителя" v-model="searchValue">
+      <input type="text" placeholder="Найти заказчика / исполнителя" v-model="searchValue">
     </div>
     <nav>
       <span id="links">
@@ -49,7 +49,7 @@
 
 <script lang="ts">
   import { defineComponent } from 'vue';
-  import { ref, onMounted } from 'vue';
+  import { ref } from 'vue';
 
   export default defineComponent({
     name: 'HeaderComp', 
@@ -78,7 +78,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 5%;
-    height: 90px;
+    height: 95px;
     background-color: #ffffff;
     img {
       width: 10%;

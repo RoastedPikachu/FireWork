@@ -3,6 +3,7 @@
   <section>
     <aside>
       <ProfileComp/>
+      <OrdersAndSkillsComp/>
     </aside>
     <aside>
 
@@ -14,12 +15,14 @@
   import { defineComponent } from 'vue';
   import HeaderComp from '@/widgets/shared/HeaderComp.vue';
   import ProfileComp from '@/widgets/features/ProfileComp.vue';
+  import OrdersAndSkillsComp from '@/widgets/features/OrdersAndSkillsComp.vue';
 
   export default defineComponent({
     name: 'HomePage',
     components: {
       HeaderComp,
-      ProfileComp
+      ProfileComp,
+      OrdersAndSkillsComp
     }
   })
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import HomePage from '@/pages/HomePage.vue';
+import SignInPage from '@/pages/SignInPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -7,6 +8,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'homePage',
     component: HomePage
   },
+  {
+    path: '/signIn',
+    name: 'signInPage',
+    component: SignInPage
+  }
   
     //component: () => import(/* webpackChunkName: "about" */ '')
 ]
