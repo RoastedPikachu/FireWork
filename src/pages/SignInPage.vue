@@ -6,8 +6,9 @@
         <div id="SignIn_error" v-if="errorMessage">{{ errorMessage }}</div>
         <input type="email" placeholder="Электронная почта" v-model="email">
         <input type="password" placeholder="Пароль" v-model="password">
-        <button>Войти</button>
+        <SignInButtonComp text="Войти"/>
       </form>
+      <router-link to="/registration" class="routeText">Регистрация</router-link>
     </div>
   </section>
 </template>
@@ -15,6 +16,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref } from 'vue';
+  import SignInButtonComp from '@/widgets/shared/SignInButtonComp.vue';
 
   export default defineComponent({
     name: 'SignInPage',
@@ -33,6 +35,9 @@
         password,
         errorMessage
       }
+    },
+    components: {
+      SignInButtonComp
     }
   })
 </script>
@@ -52,7 +57,7 @@
       flex-wrap: wrap;
       padding: 2.5%;
       width: 22.5%;
-      height: 45%;
+      height: 47.5%;
       background-color: #ffffff;
       border: 1px solid #43455D;
       border-radius: 30px;
@@ -94,22 +99,15 @@
           font-family: 'Roboto', sans-serif;
           outline: none;
         }
-        button {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 80%;
-          height: 50px;
-          background-color: #f8f8fa; 
-          border: 1px solid #43455d;
-          border-radius: 25px;
-          color: #ff7d34;
-          font-size: 18px;
-          font-weight: 500;
-          font-family: 'Roboto', sans-serif;
-          cursor: pointer;
-        }
       }
+    }
+    .routeText {
+      margin-top: 5px;
+      color: #ff7d34;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Roboto', sans-serif;
+      text-decoration: none;
     }
   }
 </style>
