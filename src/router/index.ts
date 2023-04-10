@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import HomePage from '@/pages/HomePage.vue';
 import SignInPage from '@/pages/SignInPage.vue';
 import RegistrationPage from '@/pages/RegistrationPage.vue';
+import ProfilePage from '@/pages/ProfilePage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,6 +19,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/registration',
     name: 'registrationPage',
     component: RegistrationPage
+  },
+  {
+    path: '/profile',
+    name: 'profilePage',
+    component: ProfilePage
   }
   
     //component: () => import(/* webpackChunkName: "about" */ '')
