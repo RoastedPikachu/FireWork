@@ -1,37 +1,36 @@
 <template>
-  <button type="button">{{ text }}</button>
+  <div id="SignIn_error">{{ errorMessage }}</div>
 </template>
 
 <script lang="ts">
   import { defineComponent } from 'vue';
 
   export default defineComponent({
-    name: 'SignInButtonComp',
+    name: 'ErrorComp',
     data() {
       return {
 
       }
     },
     props: {
-      text: String
+      errorMessage: String
     }
   })
 </script>
 
 <style lang="scss" scoped>
-  button {
+  div {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 80%;
+    width: 100%;
     height: 50px;
-    background-color: #f8f8fa; 
+    background-color: #dcdcdc;
     border: 1px solid #43455d;
-    border-radius: 25px;
-    color: #ff7d34;
+    border-radius: 10px;
+    color: #df2c14;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     font-family: 'Roboto', sans-serif;
-    cursor: pointer;
   }
 </style>

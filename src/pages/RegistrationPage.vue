@@ -3,19 +3,20 @@
     <div id="Registration">
       <img src="@/assets/FireWork_logo.svg" alt="FireWork">
       <form>
-        <input type="text" placeholder="Введите фамилию" v-model="lastName">
-        <input type="text" placeholder="Введите имя" v-model="firstName">
-        <input type="text" placeholder="Введите отчество" v-model="additionalName">
-        <input type="text" placeholder="Введите номер телефона" v-model="phoneNumber">
-        <input type="text" placeholder="Введите почту" v-model="email">
+        <ErrorComp :errorMessage="errorMessage" v-if="isError"/>
+        <input type="text" placeholder="Имя" v-model="firstName">
+        <input type="text" placeholder="Фамилия" v-model="lastName">
+        <input type="text" placeholder="Отчество" v-model="additionalName">
+        <input type="text" placeholder="Номер телефона" v-model="phoneNumber">
+        <input type="text" placeholder="Почта" v-model="email">
         <input type="password" placeholder="Придумайте пароль" v-model="password">
-        <input type="checkbox" id="WhoAmI_slide">
+        <input type="checkbox" id="WhoAmI_slide" v-model="isExecutor">
         <div>
           <div id="slider"></div>
           <label for="WhoAmI_slide">Я - заказчик</label>
           <label for="WhoAmI_slide">Я - исполнитель</label>
         </div>
-        <SignInButtonComp text="Регистрация"/>
+        <SignInButtonComp text="Регистрация" @click="setRegistrationData()"/>
       </form>
       <router-link to="/signIn" class="routeText">Войти</router-link>
     </div>
@@ -25,7 +26,19 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref } from 'vue';
+  import axios from 'axios';
+  import ErrorComp from '@/widgets/shared/ErrorComp.vue';
   import SignInButtonComp from '@/widgets/shared/SignInButtonComp.vue';
+
+  interface Payload {
+    name: string,
+    surname: string,
+    last_name: string,
+    phone: string,
+    email: string,
+    password: string,
+    is_customer: boolean
+  }
 
   export default defineComponent({
     name: 'SettingsPage',
@@ -41,6 +54,9 @@
       const phoneNumber = ref('');
       const email = ref('');
       const password = ref('');
+      const isExecutor = ref(false);
+      const errorMessage = ref('');
+      const isError = ref(false);
 
       return {
         firstName,
@@ -48,10 +64,42 @@
         additionalName,
         phoneNumber,
         email,
-        password
+        password,
+        isExecutor,
+        errorMessage,
+        isError
+      }
+    },
+    methods: {
+      async setRegistrationData() {
+        let url = new URL('http://62.109.10.224:500/api/auth/register/');
+
+        let payload:Payload = {
+          name: this.firstName,
+          surname: this.lastName,
+          last_name: this.additionalName,
+          phone: this.phoneNumber,
+          email: this.email,
+          password: this.password,
+          is_customer: !this.isExecutor
+        }
+
+        console.log(this.isExecutor);
+
+        const result = await axios.post(url.toString(), payload, {
+          headers: {'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        if(result.data.error) {
+          this.errorMessage = result.data.error;
+          this.isError = true;
+        } else if(result.data.status === 'success') {
+          this.$router.push('/signIn');
+        }
       }
     },
     components: {
+      ErrorComp,
       SignInButtonComp
     }
   })
@@ -155,7 +203,7 @@
       }
     }
     .routeText {
-      margin-top: 15px;
+      margin-top: 20px;
       color: #ff7d34;
       font-size: 16px;
       font-weight: 500;

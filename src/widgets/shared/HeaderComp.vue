@@ -40,9 +40,14 @@
       </span>
     </nav>
     <hr>
-    <span id="profile">
-      <img src="" alt="Профиль">
+    <span id="Profile" v-if="isSignIn">
+      <img src="" alt="">
       <p>{{ firstName }} {{ lastName }}</p>
+    </span>
+    <span id="Buttons" v-if="!isSignIn">
+      <router-link to="/signIn" class="routeText">Вход</router-link>
+      <p>/</p>
+      <router-link to="/registration" class="routeText">Регистрация</router-link>
     </span>
   </header>
 </template>
@@ -50,6 +55,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref } from 'vue';
+  import store from '@/store/index';
 
   export default defineComponent({
     name: 'HeaderComp', 
@@ -62,11 +68,13 @@
       const firstName = ref('John');
       const lastName = ref('Wikk');
       const searchValue = ref('');
+      const isSignIn = ref(store.state.isSignIn);
 
       return {
         firstName,
         lastName,
-        searchValue
+        searchValue,
+        isSignIn
       }
     }
   })
@@ -162,7 +170,7 @@
       border-radius: 5px;
       transform: rotate(90deg)
     }
-    #profile {
+    #Profile {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -180,6 +188,23 @@
         font-size: 16px;
         font-weight: 500;
         font-family: 'Roboto', sans-serif;
+      }
+    }
+    #Buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 18.5%;
+      height: 45px;
+      font-size: 26px;
+      font-weight: 500;
+      font-family: 'Roboto', sans-serif;
+      .routeText {
+        color: #070928;
+        text-decoration: none;
+      }
+      p {
+        color: #070928;
       }
     }
   }
