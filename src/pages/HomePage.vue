@@ -2,8 +2,8 @@
   <HeaderComp/>
   <section>
     <aside>
-      <ProfileComp/>
-      <OrdersAndSkillsComp/>
+      <ProfileComp :isProfile="false"/>
+      <OrdersAndSkillsComp :isProfile="false"/>
     </aside>
     <aside>
 
@@ -35,9 +35,9 @@
     align-items: flex-start;
     margin-top: 20px;
     padding: 0 7.5%;
-    width: 90%;
+    width: 85%;
     aside {
-      width: 22.5%;
+      width: 21.5%;
     }
   }
 </style>

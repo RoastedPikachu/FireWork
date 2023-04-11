@@ -1,7 +1,7 @@
 <template>
   <span>
     <h3>{{ title }}</h3>
-    <img src="@/assets/edit_icon.svg" alt="Редактировать"> 
+    <img src="@/assets/edit_icon.svg" alt="Редактировать" v-if="isProfile"> 
   </span>
 </template>
 
@@ -11,6 +11,7 @@
   export default defineComponent({
     name: 'TopDataProfileComp',
     props: {
+      isProfile: Boolean,
       title: String
     }
   })

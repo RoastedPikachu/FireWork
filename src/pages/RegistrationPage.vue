@@ -72,9 +72,9 @@
     },
     methods: {
       async setRegistrationData() {
-        let url = new URL('http://62.109.10.224:500/api/auth/register/');
+        const url = new URL('http://62.109.10.224:500/api/auth/register/');
 
-        let payload:Payload = {
+        const payload:Payload = {
           name: this.firstName,
           surname: this.lastName,
           last_name: this.additionalName,

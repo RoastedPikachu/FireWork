@@ -2,24 +2,39 @@
   <HeaderComp/>
   <section>
     <aside>
-      <ProfileComp/>
-      <OrdersAndSkillsComp/>
+      <ProfileComp :isProfile="true" />
+      <OrdersAndSkillsComp :isProfile="true"/>
     </aside>
 
     <div id="AllInfo">
       <div id="AllInfo_Data">
-        <TopDataProfileComp :title="'Данные'" @click="edit()"/>
-        <textarea placeholder="Введите свои данные" v-model="dataAboutUser" :disabled="!isEdit"></textarea>
+        <TopDataProfileComp :title="'Данные'" @click="edit()" :isProfile="true"/>
+        <textarea v-model="dataAboutUser" :disabled="!isEdit" v-if="isLoaded"></textarea>
+        <span v-if="!isLoaded" class="loadedTextarea">
+          <p></p>
+          <p></p>
+        </span>
       </div>
 
       <div id="AllInfo_Portfolio">
-        <TopDataProfileComp :title="'Портфолио'" @click="edit()"/>
-        <textarea v-model="portfolioData" :disabled="!isEdit"></textarea>
+        <TopDataProfileComp :title="'Портфолио'" @click="edit()" :isProfile="true"/>
+        <textarea v-model="portfolioData" :disabled="!isEdit" v-if="isLoaded"></textarea>
+        <span v-if="!isLoaded" class="loadedTextarea">
+          <p></p>
+          <p></p>
+          <p></p>
+        </span>
       </div>
 
       <div id="AllInfo_GeneralInfo">
-        <TopDataProfileComp :title="'Общая информация'" @click="edit()"/>
-        <textarea v-model="generalData" :disabled="!isEdit"></textarea>
+        <TopDataProfileComp :title="'Общая информация'" @click="edit()" :isProfile="true"/>
+        <textarea v-model="generalData" :disabled="!isEdit" v-if="isLoaded"></textarea>
+        <span v-if="!isLoaded" class="loadedTextarea">
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+        </span>
       </div>
 
       <div id="AllInfo_Reviews">
@@ -41,6 +56,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref } from 'vue';
+  import axios from 'axios';
   import HeaderComp from '@/widgets/shared/HeaderComp.vue';
   import ProfileComp from '@/widgets/features/ProfileComp.vue';
   import OrdersAndSkillsComp from '@/widgets/features/OrdersAndSkillsComp.vue';
@@ -60,30 +76,31 @@
       const reviews = ref([
         {
           id: 0,
-          description: 'Кто ты падла???',
-          author: 'Vitaliy Trachtenberg',
-          mark: '5.2/5'
+          description: 'Сделал что-то круто и быстро',
+          author: 'Виталий Печёнкин',
+          mark: '5.2/10'
         },
         {
           id: 1,
-          description: 'Кто ты падла???',
-          author: 'Vitaliy Trachtenberg',
-          mark: '5.2/5'
+          description: 'Сделал что-то круто и быстро',
+          author: 'Виталий Печёнкин',
+          mark: '5.2/10'
         },
         {
           id: 2,
-          description: 'Кто ты падла???',
-          author: 'Vitaliy Trachtenberg',
-          mark: '5.2/5'
+          description: 'Сделал что-то круто и быстро',
+          author: 'Виталий Печёнкин',
+          mark: '5.2/10'
         },
         {
           id: 3,
-          description: 'Кто ты падла???',
-          author: 'Vitaliy Trachtenberg',
-          mark: '5.2/5'
+          description: 'Сделал что-то круто и быстро',
+          author: 'Виталий Печёнкин',
+          mark: '5.2/10'
         },
       ]);
       const isEdit = ref(false);
+      const isLoaded = ref(false);
 
       const edit = () => {
         isEdit.value = !isEdit.value;
@@ -95,8 +112,31 @@
         generalData,
         reviews,
         isEdit,
+        isLoaded,
         edit
       }
+    },
+    methods: {
+      async getInfoAboutUser() {
+        const url = new URL('http://62.109.10.224:500/api/account/data/');
+
+        const token = document.cookie.slice(261);
+
+        const result = await axios.post(url.toString(), {token: token}, {
+          headers: {'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        if(result.data.portfolio) {
+          this.isLoaded = true;
+          this.generalData = result.data.profile.description;
+          this.portfolioData = result.data.portfolio.data;
+        } 
+      }
+    },
+    mounted() {
+      setInterval(() => {
+        this.getInfoAboutUser();
+      }, 10000)
     },
     components: {
       HeaderComp,
@@ -165,6 +205,24 @@
           resize: none;
           outline: none;
         }
+        .loadedTextarea {
+          display: flex;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          margin-top: 5%;
+          width: 95%;
+          height: 75%;
+          p {
+            width: 90%;
+            height: 13.5px;
+            background-color: #e0e0e0;
+            border-radius: 2.5px;
+          }
+          p:last-child {
+            margin-top: -40px;
+            width: 70%;
+          }
+        }
       }
       #AllInfo_Portfolio {
         display: flex;
@@ -190,6 +248,28 @@
           resize: none;
           outline: none;
         }
+        .loadedTextarea {
+          display: flex;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          margin-top: 2.5%;
+          width: 95%;
+          height: 75%;
+          p {
+            width: 90%;
+            height: 13.5px;
+            background-color: #e0e0e0;
+            border-radius: 2.5px;
+          }
+          p:nth-child(2) {
+            margin-top: -25px;
+            width: 90%;
+          }
+          p:last-child {
+            margin-top: -35px;
+            width: 75%;
+          }
+        }
       }
       #AllInfo_GeneralInfo {
         display: flex;
@@ -214,6 +294,32 @@
           font-family: 'Roboto', sans-serif;
           resize: none;
           outline: none;
+        }
+        .loadedTextarea {
+          display: flex;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          margin-top: 2.5%;
+          width: 95%;
+          height: 75%;
+          p {
+            width: 90%;
+            height: 13.5px;
+            background-color: #e0e0e0;
+            border-radius: 2.5px;
+          }
+          p:nth-child(2) {
+            margin-top: -25px;
+            width: 90%;
+          }
+          p:nth-child(3) {
+            margin-top: -35px;
+            width: 85%;
+          }
+          p:last-child {
+            margin-top: -45px;
+            width: 70%;
+          }
         }
       }
       #AllInfo_Reviews {

@@ -3,10 +3,27 @@
     <div id="Profile_bgImage"></div>
     <div id="Profile_mainInfo">
       <div id="Profile_mainInfo_ImgWrapper">
-        <img src="" alt="Профиль">
+        <input type="file" id="File" @change="setPhoto($event)">
+        <label for="File" v-if="isProfile">
+          <img src="@/assets/edit_icon.svg" alt="Загрузить файл">
+        </label>
+        <img src="" alt="Профиль" v-if="isLoaded">
+        <div v-if="!isLoaded"></div>
       </div>
-      <p>{{ firstName }} {{ lastName }}</p>
-      <p>{{ description }}</p>
+
+      <p class="loadedProfileText" v-if="!isLoaded"></p>
+      <input type="text" disabled v-if="!isProfile && isLoaded" v-model="userName">
+      <span v-if="isProfile && isLoaded">
+        <input type="text" v-model="userName" :disabled="!isEdit">
+        <img src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()">
+      </span>
+
+      <p class="loadedProfileText" v-if="!isLoaded"></p>
+      <input type="text" disabled v-if="!isProfile && isLoaded" v-model="description">
+      <span v-if="isProfile && isLoaded">
+        <input type="text" v-model="description" :disabled="!isEdit">
+        <img src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()">
+      </span>
     </div>
 
     <div class="rating" v-show="isCustomer">
@@ -30,6 +47,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref } from 'vue';
+  import axios from 'axios';
 
   export default defineComponent({
     name: 'ProfileComp',
@@ -39,23 +57,66 @@
       }
     },
     setup() {
-      const firstName = ref('John');
-      const lastName = ref('Wikk');
+      const photo = ref('');
+      const userName = ref(``);
       const description = ref('I love big cocks');
       const isCustomer = ref(false);
       const isExecutor = ref(true);
       const customerRating = ref('4.5/10');
       const executorRating = ref('нет заказов');
+      const isEdit = ref(false);
+      const isLoaded = ref(false);
+
+      const setPhoto = (event:any) => {
+        let target = event.target;
+        let transfer = event.dataTransfer;
+        let file = target.files || transfer.files;
+
+        console.log(file);
+      }
+
+      const edit = () => {
+        isEdit.value = !isEdit.value;
+      }
 
       return {
-        firstName,
-        lastName,
+        photo,
+        userName,
         description,
         isCustomer,
         isExecutor,
         customerRating,
-        executorRating
+        executorRating,
+        isEdit,
+        isLoaded,
+        setPhoto,
+        edit
       }
+    },
+    methods: {
+      async getInfoAboutUser() {
+        const url = new URL('http://62.109.10.224:500/api/account/data/');
+
+        const token = document.cookie.slice(261);
+
+        const result = await axios.post(url.toString(), {token: token}, {
+          headers: {'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        if(result.data.name) {
+          this.isLoaded = true;
+          this.userName = `${result.data.name} ${result.data.surname}`.slice(0, 8) + '.';
+          this.description = result.data.profile.description;
+        } 
+      }
+    },
+    mounted() {
+      setInterval(() => {
+        this.getInfoAboutUser();
+      }, 10000);
+    },
+    props: {
+      isProfile: Boolean
     }
   })
 </script>
@@ -91,6 +152,7 @@
       height: 150px;
       z-index: 10;
       #Profile_mainInfo_ImgWrapper {
+        position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -98,26 +160,95 @@
         height: 100px;
         background-color: #ffffff;
         border-radius: 50px;
+        z-index: 4;
+        input {
+          display: none;
+        }
+        label {
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 90px;
+          height: 90px;
+          background-color: rgba(255, 255, 255, 0.4);
+          border-radius: 50px;
+          cursor: pointer;
+          z-index: 6;
+          img {
+            margin-top: -5%;
+            margin-left: 7.5%;
+            width: 50%;
+            height: 50%;
+            background-color: transparent;
+            border-radius: 0;
+          }
+        }
         img {
+          width: 90px;
+          height: 90px;
+          border-radius: 50px;
+          z-index: 5;
+        }
+        div {
           width: 90px;
           height: 90px;
           background-color: rgba(0, 0, 0, 0.25);
           border-radius: 50px;
+          z-index: 5;
         }
       }
-      p {
-        width: 100%;
-        font-family: 'Roboto', sans-serif;
-        text-align: center;
+      .loadedProfileText {
+        width: 55%;
+        height: 12.5px;
+        background-color: #e0e0e0;
+        border-radius: 2.5px;
       }
-      p:first-child {
+      .loadedProfileText:last-child {
+        width: 70%;
+      }
+      input {
+        width: 100%;
+        background-color: transparent;
+        border: none;
         color: #070928;
         font-size: 16px;
         font-weight: 500;
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        outline: none;
       }
-      p:last-child {
+      input:last-child {
         color: rgba(7, 9, 40, 0.75);
         font-size: 14px;
+      }
+      span {
+        display: flex;
+        justify-content: flex-start;
+        input {
+          padding: 0 15% 0 20%;
+          width: 50%;
+          color: #070928;
+          font-size: 16px;
+          font-weight: 500;
+          text-align: right;
+        }
+        img {
+          margin-top: -5px;
+          margin-left: -7.5%;
+          cursor: pointer;
+        }
+      }
+      span:last-child {
+        input {
+          padding: 0 5% 0 10%;
+          width: 67.5%;
+          color: rgba(7, 9, 40, 0.75);
+          font-size: 14px;
+        }
+        img {
+          margin-left: 0;
+        }
       }
     }
     .rating {

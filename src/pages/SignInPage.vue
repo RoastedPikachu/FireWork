@@ -48,7 +48,7 @@
     },
     methods: {
       async getToken() {
-        let url = new URL('http://62.109.10.224:500/api/auth/login/');
+        const url = new URL('http://62.109.10.224:500/api/auth/login/');
 
         const payload:Payload = {
           email: this.email,
