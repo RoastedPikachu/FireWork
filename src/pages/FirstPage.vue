@@ -28,7 +28,7 @@
       <h3>Приятный дизайн</h3>
     </div>
     <footer>
-      <p>Telegram - <a href="">@firework_support</a></p>
+      <p>Telegram - <a href="https:/t.me/firework_support" target="_blank">@firework_support</a></p>
     </footer>
   </main>
 </template>

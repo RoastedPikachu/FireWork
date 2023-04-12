@@ -17,22 +17,14 @@
     </div>
     <span id="SortingCheckbox">
       <input type="checkbox" id="Rating" v-model="isRatingCheck">
-      <label>Сортировать по рейтингу</label>
+      <label>Отфильтровать по рейтингу</label>
     </span>
-    <div id="Price">
-      <h5>Цена:</h5>
-      <span>
-        <p>от</p>
-        <input type="text" v-model="lowPrice" maxlength="6">
-        <p>$</p>
-      </span>
-      <span>
-        <p>до</p>
-        <input type="text" v-model="topPrice" maxlength="6">
-        <p>$</p>
-      </span>
+    <div id="Skills">
+      <h5>Навыки:</h5>
+      <button @click="setPython()" :class="{pyActive: isPython}">Python</button>
+      <button @click="setJS()" :class="{jsActive: isJS}">JavaScript</button>
     </div>
-    <button>Сортировка</button>
+    <button @click="sort()">Фильтр</button>
   </div>
 </template>
 
@@ -54,9 +46,9 @@
       const isChoosen3 = ref(false);
       const isChoosen4 = ref(false);
       const lowChoosenRating = ref(0);
-      const topChoosenRating = ref(0);
-      const lowPrice = ref('');
-      const topPrice = ref('');
+      const topChoosenRating = ref(10);
+      const isPython = ref(true);
+      const isJS = ref(true);
 
       const setNeededRating = (event:any) => {
         let target = event.target;
@@ -92,9 +84,36 @@
         isChoosen4,
         lowChoosenRating,
         topChoosenRating,
-        lowPrice,
-        topPrice,
+        isPython,
+        isJS,
         setNeededRating
+      }
+    },
+    methods: {
+      sort() {
+        if(this.isRatingCheck) {
+          let sortingParams = {
+            isPython: this.isPython,
+            isJS: this.isJS,
+            lowRating: this.lowChoosenRating,
+            topRating: this.topChoosenRating
+          }
+
+          this.$emit('sort', sortingParams);
+        } else {
+          let sortingParams = {
+            isPython: this.isPython,
+            isJS: this.isJS,
+          }
+
+          this.$emit('sort', sortingParams);
+        }
+      },
+      setPython() {
+        this.isPython = !this.isPython;
+      },
+      setJS() {
+        this.isJS = !this.isJS;
       }
     }
   })
@@ -161,7 +180,7 @@
         font-family: 'Roboto', sans-serif;
       }
     }
-    #Price {
+    #Skills {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -172,21 +191,17 @@
         font-weight: 400;
         font-family: 'Roboto', sans-serif;
       }
-      span {
-        display: flex;
-        justify-content: space-between;
-        width: 30%;
-        p {
-          color: rgba(7, 9, 40, 0.75);
-          font-size: 16px;
-          font-weight: 400;
-          font-family: 'Roboto', sans-serif;
-        }
-        input {
-          width: 50%;
-          border-width: 0 0 1px 0;
-          outline: none;
-        }
+      button {
+        width: 70px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      .jsActive {
+        color: #ff7d34;
+      }
+      .pyActive {
+        color: #ff7d34;
       }
     }
     button {
@@ -198,7 +213,7 @@
       background-color: #F8F8FA;
       border: 1px solid #43455D;
       border-radius: 25px;
-      color: #ff7d34;
+      color: rgba(7, 9, 40, 0.75);
       font-size: 16px;
       font-weight: 500;
       font-family: 'Roboto', sans-serif;

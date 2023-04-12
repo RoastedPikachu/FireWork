@@ -1,7 +1,7 @@
 <template>
   <div id="OrdersAndSkills">
     <div class="orderOrSkill">
-      <h3>Заказы</h3>
+      <h3>Выполненные заказы</h3>
       <span v-if="isLoaded">
         <img src="@/assets/calendar_icon.svg" alt="Заказы">
         <p class="desc">{{ orderDescription }}</p>

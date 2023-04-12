@@ -2,21 +2,15 @@
   <HeaderComp/>
   <section>
     <aside>
-      <SortingComp/>
+      <SortingComp @sort="sort"/>
     </aside>
     <div id="Executors">
       <div class="executor" v-for="executor of executors" :key="executor.id">
-        <div>
-          <img src="">
-          <span>
-            <p>{{ executor.name }} {{ executor.surname }}</p>
-            <p>{{ executor.work }}</p>
-          </span>
-        </div>
-        <router-link :to="`/executors/executor:${executor.id}`" class="routerButton">Подробнее об исполнителе</router-link>
+        <ItemBrieflyInfoComp :name="executor.name" :surname="executor.surname" :work="executor.work" :isExecutor="true" :isLoaded="isLoaded" :photo="photo"/>
+        <router-link :to="`/profile:${executor.id}`" class="routerButton">Подробнее об исполнителе</router-link>
         <div>
           <p>Рейтинг: {{ executor.rating.score }}/10</p>
-          <p>Средняя цена работы: {{ executor.averagePrice }}$</p>
+          <p>Средняя цена работы: {{ executor.averagePrice || 100 }}$</p>
           <p>Умеет: </p> <p v-for="skill of Object.values(executor.skills)" :key="skill.id">{{ skill.title }}</p>
         </div>
         <button>
@@ -34,10 +28,7 @@
   import axios from 'axios';
   import HeaderComp from '@/widgets/shared/HeaderComp.vue';
   import SortingComp from '@/widgets/shared/SortingComp.vue';
-
-  interface Executor {
-    id: number
-  }
+  import ItemBrieflyInfoComp from '@/widgets/shared/ItemBrieflyInfoComp.vue';
 
   export default defineComponent({
     name: 'ExecutorsPage',
@@ -60,14 +51,17 @@
           skills: [
             {
               id: 0,
+              title: ''
             }
           ]
         }
       ]);
+      const photo = ref('');
       const isLoaded = ref(false);
 
       return {
         executors,
+        photo,
         isLoaded
       }
     },
@@ -79,11 +73,32 @@
           headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
 
-        console.log(result.data);
-
         if(Object.values(result.data).length) {
           this.isLoaded = true;
+          this.photo = result.data[0].photo;
           this.executors = Object.values(result.data);
+        }
+      },
+      sort(sortingParams:any) {
+        if(sortingParams.topRating) {
+          let skill = '';
+          if(sortingParams.isPython && !sortingParams.isJS) {
+            skill = 'Python'
+            this.executors = this.executors.filter(item => item.skills[0]?.title == skill);
+          } else if(sortingParams.isJS && !sortingParams.isPython) {
+            skill = 'JavaScript'
+            this.executors = this.executors.filter(item => item.skills[0]?.title == skill);
+          } 
+          this.executors = this.executors.filter(item => (item.rating.score > sortingParams.lowRating && item.rating.score <= sortingParams.topRating));
+        } else {
+          let skill = '';
+          if(sortingParams.isPython && !sortingParams.isJS) {
+            skill = 'Python'
+            this.executors = this.executors.filter(item => item.skills[0]?.title == skill);
+          } else if(sortingParams.isJS && !sortingParams.isPython) {
+            skill = 'JavaScript'
+            this.executors = this.executors.filter(item => item.skills[0]?.title == skill);
+          }
         }
       }
     },
@@ -92,7 +107,8 @@
     },
     components: {
       HeaderComp,
-      SortingComp
+      SortingComp,
+      ItemBrieflyInfoComp
     }
   })
 </script>
@@ -109,10 +125,6 @@
       height: 600px;
     }
     #Executors {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      flex-wrap: wrap;
       width: 66%;
       min-height: 850px;
       height: auto;
@@ -121,6 +133,7 @@
         justify-content: space-around;
         align-items: center;
         flex-wrap: wrap;
+        margin-top: 20px;
         padding: 2.5% 0;
         width: 100%;
         height: 170px;
@@ -204,6 +217,9 @@
           color: #ff7d34;
           text-decoration: none;
         }
+      }
+      .executor:first-child {
+        margin-top: 0px;
       }
     }
   }

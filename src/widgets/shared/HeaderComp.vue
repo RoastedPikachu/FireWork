@@ -8,7 +8,7 @@
     <nav>
       <span id="links">
         <div class="linkBlock">
-          <router-link to="/home" class="routeImg">
+          <router-link to="/" class="routeImg">
             <img src="@/assets/home_icon.svg" alt="Домой">
           </router-link>
           <p>Домой</p>

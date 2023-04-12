@@ -3,11 +3,7 @@
     <div id="Profile_bgImage"></div>
     <div id="Profile_mainInfo">
       <div id="Profile_mainInfo_ImgWrapper">
-        <input type="file" id="File" @change="setPhoto($event)">
-        <label for="File" v-if="isProfile">
-          <img src="@/assets/edit_icon.svg" alt="Загрузить файл">
-        </label>
-        <img src="" alt="Профиль" v-if="isLoaded">
+        <img :src="photo" alt="Профиль" v-if="isLoaded">
         <div v-if="!isLoaded"></div>
       </div>
 
@@ -67,14 +63,6 @@
       const isEdit = ref(false);
       const isLoaded = ref(false);
 
-      const setPhoto = (event:any) => {
-        let target = event.target;
-        let transfer = event.dataTransfer;
-        let file = target.files || transfer.files;
-
-        console.log(file);
-      }
-
       const edit = () => {
         isEdit.value = !isEdit.value;
       }
@@ -89,7 +77,6 @@
         executorRating,
         isEdit,
         isLoaded,
-        setPhoto,
         edit
       }
     },
@@ -102,7 +89,7 @@
         const result = await axios.post(url.toString(), {token: token}, {
           headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
-
+        
         if(result.data.name) {
           this.isLoaded = true;
           this.userName = `${result.data.name} ${result.data.surname}`.slice(0, 8) + '.';
@@ -113,7 +100,7 @@
     mounted() {
       setInterval(() => {
         this.getInfoAboutUser();
-      }, 10000);
+      }, 5000);
     },
     props: {
       isProfile: Boolean
