@@ -2,8 +2,20 @@
   <HeaderComp/>
   <section>
     <aside>
-      <ProfileComp :isProfile="true" />
-      <OrdersAndSkillsComp :isProfile="true"/>
+      <ProfileComp 
+        :isProfile="true" 
+        :photo="photo"
+        :description="description"
+        :userName="userName"
+        :isCustomer="!isExecutor"
+        :isLoaded="isLoaded"
+      />
+      <OrdersAndSkillsComp 
+        :isProfile="true"
+        :skills="skills" 
+        :isLoaded="isLoaded" 
+        :heading="heading"
+      />
     </aside>
 
     <div id="AllInfo">
@@ -99,6 +111,12 @@
           mark: '5.2/10'
         },
       ]);
+      const heading = ref('');
+      const photo = ref('');
+      const description = ref('');
+      const userName = ref('');
+      const skills = ref([]);
+      const isExecutor = ref(false);
       const isEdit = ref(false);
       const isLoaded = ref(false);
 
@@ -111,6 +129,12 @@
         portfolioData,
         generalData,
         reviews,
+        heading,
+        photo,
+        description,
+        userName,
+        skills,
+        isExecutor,
         isEdit,
         isLoaded,
         edit
@@ -128,6 +152,11 @@
 
         if(result.data.portfolio) {
           this.isLoaded = true;
+          this.photo = result.data.photo;
+          this.skills = Object.values(result.data.skills);
+          this.description = result.data.profile.description;
+          this.userName = `${result.data.name} ${result.data.surname}`;
+          this.isExecutor = !result.data.is_customer;
           this.generalData = result.data.profile.description;
           this.portfolioData = result.data.portfolio.data;
         } 
@@ -136,7 +165,14 @@
     mounted() {
       setInterval(() => {
         this.getInfoAboutUser();
-      }, 10000)
+      }, 5000)
+      setInterval(() => {
+        if(this.isExecutor) {
+          this.heading = 'Мои навыки';
+        } else if(!this.isExecutor) {
+          this.heading = 'Требуются навыки';
+        }
+      }, 500);
     },
     components: {
       HeaderComp,

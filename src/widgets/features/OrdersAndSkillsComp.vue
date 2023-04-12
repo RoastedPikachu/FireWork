@@ -14,17 +14,16 @@
     </div>
 
     <div class="orderOrSkill">
-      <h3>Мои навыки</h3>
-      <span  v-if="isLoaded && !isProfile">
-        <p v-for="skill of skills" :key="skill.id">{{ skill.title }}</p>
+      <h3>{{ heading }}</h3>
+      <img class="editImg" src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()" v-if="isProfile">
+      <span v-if="isLoaded && !isProfile">
+        <p v-for="targetSkill of targetSkills" :key="targetSkill.id">{{ targetSkill.title }}</p>
       </span>
       <span v-if="isLoaded && isProfile">
-        <input type="text" v-for="skill of skills" :key="skill.id" v-model="skill.title" :disabled="!isEdit">
-        <img src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()" v-if="isProfile">
+        <input type="text" v-for="targetSkill of targetSkills" :key="targetSkill.id" v-model="targetSkill.title" :disabled="!isEdit">
       </span>
       <span v-if="!isLoaded">
         <p v-for="loadedSkill of loadedSkills" :key="loadedSkill.id" class="loadedSkill"></p>
-        <img src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()" v-if="isProfile">
       </span>
       <button>Посмотреть больше</button>
     </div>
@@ -34,7 +33,11 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref, onMounted } from 'vue';
-  import axios from 'axios';
+
+  interface Skill {
+    id: number,
+    title: string
+  }
 
   export default defineComponent({
     name: 'OrdersAndSkillsComp',
@@ -45,28 +48,6 @@
     },
     setup() {
       const orderDescription = ref('Создать UI/UX дизайн сайта');
-      const skills = ref([
-        {
-          id: 0,
-          title: 'CSS'
-        },
-        {
-          id: 1,
-          title: 'UI design'
-        },
-        {
-          id: 2,
-          title: 'Python'
-        },
-        {
-          id: 3,
-          title: 'C++'
-        },
-        {
-          id: 4,
-          title: 'Unity'
-        },
-      ]);
       const loadedSkills = ref([
         {
           id: 0,
@@ -82,7 +63,7 @@
         },
       ])
       const isEdit = ref(false);
-      const isLoaded = ref(false);
+      const targetSkills = ref([] as Skill[]);
 
       const edit = () => {
         isEdit.value = !isEdit.value;
@@ -90,36 +71,32 @@
 
       return {
         orderDescription,
-        skills,
         loadedSkills,
         isEdit,
-        isLoaded,
+        targetSkills,
         edit
       }
     },
-    methods: {
-      async getInfoAboutSkills() {
-        const url = new URL('http://62.109.10.224:500/api/account/skill/all/');
-
-        //const token = document.cookie.slice(261);
-
-        const result = await axios.get(url.toString(), {
-          headers: {'Content-Type': 'application/json;charset=utf-8'}
-        });
-
-        if(result.data) {
-          this.isLoaded = true;
-          this.skills = Object.values(result.data);
-        } 
+    mounted() {
+      if(this.isEdit) {
+        setInterval(() => {
+          if(this.skills) {
+            this.targetSkills = this.skills as [];
+          }
+        }, 1000);
+      } else {
+        setInterval(() => {
+          if(this.skills) {
+            this.targetSkills = this.skills as [];
+          }
+        }, 15000);
       }
     },
-    mounted() {
-      setInterval(() => {
-        this.getInfoAboutSkills();
-      }, 10000);
-    },
     props: {
-      isProfile: Boolean
+      heading: String,
+      isProfile: Boolean,
+      skills: Array,
+      isLoaded: Boolean
     }
   })
 </script>
@@ -145,12 +122,16 @@
       width: 90%;
       height: 45%;
       h3 {
-        width: 100%;
+        width: 80%;
         color: #070928;
         font-size: 16px;
         font-weight: 500;
         font-family: 'Roboto', sans-serif;
         text-align: left;
+      }
+      .editImg {
+        margin-left: 10px;
+        cursor: pointer;
       }
       span { 
         display: flex;
@@ -190,9 +171,6 @@
         input:nth-child(9) {
           margin-left: 0;
         }
-        img {
-          cursor: pointer;
-        }
         .loadedSkill {
           margin-left: 10px;
           width: 40px;
@@ -208,10 +186,6 @@
         }
         .loadedSkill:nth-child(9) {
           margin-left: 0;
-        }
-        img:last-child {
-          margin-left: 2.5%;
-          width: 7.5%;
         }
         .loadedOrder {
           width: 85%;

@@ -117,7 +117,6 @@
         if(result) {
           this.myMessages = messArr.filter(item => item.from == 'me');
           this.messages = messArr.filter(item => item.from != 'me');
-          console.log(this.messages);
           this.isLoaded = true;
         }
       },

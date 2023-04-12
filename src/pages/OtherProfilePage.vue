@@ -2,8 +2,20 @@
   <HeaderComp/>
   <section>
     <aside>
-      <ProfileComp :isProfile="false" />
-      <OrdersAndSkillsComp :isProfile="false"/>
+      <ProfileComp 
+        :isProfile="false" 
+        :photo="photo"
+        :description="description"
+        :userName="userName"
+        :isCustomer="!isExecutor"
+        :isLoaded="isLoaded"
+      />
+      <OrdersAndSkillsComp 
+        :isProfile="false" 
+        :skills="skills" 
+        :isLoaded="isLoaded" 
+        :heading="heading"
+      />
     </aside>
 
     <div id="AllInfo">
@@ -74,6 +86,11 @@
       const dataAboutUser = ref('');
       const portfolioData = ref('');
       const generalData = ref('');
+      const heading = ref('');
+      const photo = ref('');
+      const description = ref('');
+      const userName = ref('');
+      const skills = ref([]);
       const reviews = ref([
         {
           id: 0,
@@ -107,6 +124,11 @@
       return {
         dataAboutUser,
         portfolioData,
+        photo,
+        heading,
+        description,
+        userName,
+        skills,
         generalData,
         reviews,
         isExecutor,
@@ -124,10 +146,12 @@
           headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
 
-        console.log(result);
-
         if(result.data.portfolio) {
           this.isLoaded = true;
+          this.photo = result.data.photo;
+          this.skills = Object.values(result.data.skills);
+          this.description = result.data.profile.description;
+          this.userName = `${result.data.name} ${result.data.surname}`;
           this.isExecutor = !result.data.is_customer;
           this.generalData = result.data.profile.description;
           this.portfolioData = result.data.portfolio.data;
@@ -137,7 +161,14 @@
     mounted() {
       setInterval(() => {
         this.getInfoAboutUserById();
-      }, 5000)
+      }, 5000);
+      setInterval(() => {
+        if(this.isExecutor) {
+          this.heading = 'Мои навыки';
+        } else if(!this.isExecutor) {
+          this.heading = 'Требуются навыки';
+        }
+      }, 500);
     },
     components: {
       HeaderComp,

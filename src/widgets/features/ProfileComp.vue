@@ -8,16 +8,16 @@
       </div>
 
       <p class="loadedProfileText" v-if="!isLoaded"></p>
-      <input type="text" disabled v-if="!isProfile && isLoaded" v-model="userName">
+      <input type="text" disabled v-if="!isProfile && isLoaded" v-model="targetUserName">
       <span v-if="isProfile && isLoaded">
-        <input type="text" v-model="userName" :disabled="!isEdit">
+        <input type="text" v-model="targetUserName" :disabled="!isEdit">
         <img src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()">
       </span>
 
       <p class="loadedProfileText" v-if="!isLoaded"></p>
-      <input type="text" disabled v-if="!isProfile && isLoaded" v-model="description">
+      <input type="text" disabled v-if="!isProfile && isLoaded" v-model="targetDescription">
       <span v-if="isProfile && isLoaded">
-        <input type="text" v-model="description" :disabled="!isEdit">
+        <input type="text" v-model="targetDescription" :disabled="!isEdit">
         <img src="@/assets/edit_icon.svg" alt="Редактировать" @click="edit()">
       </span>
     </div>
@@ -26,7 +26,7 @@
       <p>Рейтинг заказчика</p>
       <p>{{ customerRating }}</p>
     </div>  
-    <div class="rating" v-show="isExecutor">
+    <div class="rating" v-show="!isCustomer">
       <p>Рейтинг исполнителя</p>
       <p>{{ executorRating }}</p>
     </div>
@@ -53,57 +53,45 @@
       }
     },
     setup() {
-      const photo = ref('');
-      const userName = ref(``);
-      const description = ref('I love big cocks');
-      const isCustomer = ref(false);
-      const isExecutor = ref(true);
+      const targetUserName = ref('' as string || undefined);
+      const targetDescription = ref('' as string || undefined);
       const customerRating = ref('4.5/10');
       const executorRating = ref('нет заказов');
       const isEdit = ref(false);
-      const isLoaded = ref(false);
 
       const edit = () => {
         isEdit.value = !isEdit.value;
       }
 
       return {
-        photo,
-        userName,
-        description,
-        isCustomer,
-        isExecutor,
+        targetUserName,
+        targetDescription,
         customerRating,
         executorRating,
         isEdit,
-        isLoaded,
         edit
       }
     },
-    methods: {
-      async getInfoAboutUser() {
-        const url = new URL('http://62.109.10.224:500/api/account/data/');
-
-        const token = document.cookie.slice(261);
-
-        const result = await axios.post(url.toString(), {token: token}, {
-          headers: {'Content-Type': 'application/json;charset=utf-8'}
-        });
-        
-        if(result.data.name) {
-          this.isLoaded = true;
-          this.userName = `${result.data.name} ${result.data.surname}`.slice(0, 8) + '.';
-          this.description = result.data.profile.description;
-        } 
+    mounted() {
+      if(this.isEdit) {
+        setInterval(() => {
+          this.targetUserName = this.userName;
+          this.targetDescription = this.description || 'Я пельмешка';
+        }, 15000);
+      } else {
+        setInterval(() => {
+          this.targetUserName = this.userName;
+          this.targetDescription = this.description || 'Я пельмешка';
+        }, 500);
       }
     },
-    mounted() {
-      setInterval(() => {
-        this.getInfoAboutUser();
-      }, 5000);
-    },
     props: {
-      isProfile: Boolean
+      isLoaded: Boolean,
+      isProfile: Boolean,
+      photo: String,
+      description: String,
+      userName: String,
+      isCustomer: Boolean,
     }
   })
 </script>

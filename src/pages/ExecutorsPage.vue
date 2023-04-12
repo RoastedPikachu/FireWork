@@ -5,6 +5,12 @@
       <SortingComp @sort="sort"/>
     </aside>
     <div id="Executors">
+      <div id="Executors_AddResume" v-if="isExecutor">
+        <button @click="() => isAddingActive = !isAddingActive">Добавить своё резюме</button>
+        <div v-if="isAddingActive">
+
+        </div>
+      </div>
       <div class="executor" v-for="executor of executors" :key="executor.id">
         <ItemBrieflyInfoComp :name="executor.name" :surname="executor.surname" :work="executor.work" :isExecutor="true" :isLoaded="isLoaded" :photo="photo"/>
         <router-link :to="`/profile:${executor.id}`" class="routerButton">Подробнее об исполнителе</router-link>
@@ -56,12 +62,16 @@
           ]
         }
       ]);
+      const isAddingActive = ref(false);
       const photo = ref('');
+      const isExecutor = ref(false);
       const isLoaded = ref(false);
 
       return {
         executors,
+        isAddingActive,
         photo,
+        isExecutor,
         isLoaded
       }
     },
@@ -100,9 +110,23 @@
             this.executors = this.executors.filter(item => item.skills[0]?.title == skill);
           }
         }
+      },
+      async getInfoAboutUser() {
+        const url = new URL('http://62.109.10.224:500/api/account/data/');
+
+        const token = document.cookie.slice(261);
+
+        const result = await axios.post(url.toString(), {token: token}, {
+          headers: {'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        if(result.data.portfolio) {
+          this.isExecutor = !result.data.is_customer;
+        } 
       }
     },
     mounted() {
+      this.getInfoAboutUser();
       this.getAllExecutors();
     },
     components: {
@@ -128,6 +152,28 @@
       width: 66%;
       min-height: 850px;
       height: auto;
+      #Executors_AddResume {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 60px;
+        background-color: #ffffff;
+        border: 1px solid #43455d;
+        border-radius: 25px;
+        button {
+          width: 50%;
+          height: 70%;
+          background-color: #ff7d34;
+          border: none;
+          border-radius: 20px;
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 500;
+          font-family: 'Roboto', sans-serif;
+          cursor: pointer;
+        }
+      }
       .executor {
         display: flex;
         justify-content: space-around;
