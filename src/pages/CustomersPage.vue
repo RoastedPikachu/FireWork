@@ -39,12 +39,12 @@
         </div>
       </div>
       <div class="customer" v-for="customer of customers" :key="customer.id">
-        <ItemBrieflyInfoComp :name="customer.name" :surname="customer.surname" :work="customer.work" :isCustomer="true" :isLoaded="isLoaded" :photo="photo"/>
-        <router-link :to="`/profile:${customer.id}`" class="routerButton">Подробнее о заказчике</router-link>
+        <ItemBrieflyInfoComp :name="customer.author.name" :surname="customer.author.surname" :work="customer.work" :isCustomer="true" :isLoaded="isLoaded" :photo="photo"/>
+        <router-link :to="`/profile:${customer.author.id}`" class="routerButton">Подробнее о заказчике</router-link>
         <div>
-          <p>Рейтинг: {{ customer.rating.score }}/10</p>
-          <p>Оплата: 100$</p>
-          <p>Требуется: </p> <p v-for="skill of Object.values(customer.skills)" :key="skill.id">{{ skill.title }}</p>
+          <p>Рейтинг: {{ customer.author.rating.score }}/10</p>
+          <p>Оплата: {{ customer.price }}$</p>
+          <p>Требуется: </p> <p v-for="skill of Object.values(customer.author.skills)" :key="skill.id">{{ skill.title }}</p>
         </div>
         <button @click="sendMessage(customer.id)">
           <p>Предложить услуги</p>  
@@ -59,6 +59,7 @@
   import { defineComponent } from 'vue';
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
+  import store from '@/store/index';
   import HeaderComp from '@/widgets/shared/HeaderComp.vue';
   import SortingComp from '@/widgets/shared/SortingComp.vue';
   import ItemBrieflyInfoComp from '@/widgets/shared/ItemBrieflyInfoComp.vue';
@@ -78,9 +79,16 @@
     phone: string,
     portfolio: any,
     profile: any,
-    rating: {
-      score: number
-    },
+    price: number,
+    author: {
+      id: number,
+      skills: Skill[],
+      name: string,
+      surname: string,
+      rating: {
+        score: number
+      }
+    }
     skills: Skill[],
     surname: string
   }
@@ -137,8 +145,8 @@
       }
     },
     methods: {
-      async getAllExecutors() {
-        const url = new URL('http://62.109.10.224:500/api/account/GetCustomers/');
+      async getAllOrders() {
+        const url = new URL('http://62.109.10.224:500/api/task/All/');
 
         const result = await axios.get(url.toString(), {
           headers: {'Content-Type': 'application/json;charset=utf-8'}
@@ -146,7 +154,7 @@
 
         if(Object.values(result.data).length) {
           this.isLoaded = true;
-          this.photo = result.data[0].photo;
+          this.photo = result.data[0].author.photo;
           this.customers = Object.values(result.data);
         }
       },
@@ -155,20 +163,20 @@
           let skill = '';
           if(sortingParams.isPython && !sortingParams.isJS) {
             skill = 'Python'
-            this.customers = this.customers.filter(item => item.skills[0]?.title == skill);
+            this.customers = this.customers.filter(item => item.author.skills[0]?.title == skill);
           } else if(sortingParams.isJS && !sortingParams.isPython) {
             skill = 'JavaScript'
-            this.customers = this.customers.filter(item => item.skills[0]?.title == skill);
+            this.customers = this.customers.filter(item => item.author.skills[0]?.title == skill);
           } 
-          this.customers = this.customers.filter(item => (item.rating.score > sortingParams.lowRating && item.rating.score <= sortingParams.topRating));
+          this.customers = this.customers.filter(item => (item.author.rating.score > sortingParams.lowRating && item.author.rating.score <= sortingParams.topRating));
         } else {
           let skill = '';
           if(sortingParams.isPython && !sortingParams.isJS) {
             skill = 'Python'
-            this.customers = this.customers.filter(item => item.skills[0]?.title == skill);
+            this.customers = this.customers.filter(item => item.author.skills[0]?.title == skill);
           } else if(sortingParams.isJS && !sortingParams.isPython) {
             skill = 'JavaScript'
-            this.customers = this.customers.filter(item => item.skills[0]?.title == skill);
+            this.customers = this.customers.filter(item => item.author.skills[0]?.title == skill);
           }
         }
       },
@@ -184,7 +192,9 @@
           headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
 
-        console.log(result);
+        console.log(payload)
+
+        //store.dispatch('addNotif', payload);
       },
       async addOrder() {
         const url = new URL('http://62.109.10.224:500/api/task/create/');
@@ -204,12 +214,15 @@
         })
 
         console.log(result);
-        this.orderName = '';
-        this.orderDesc = '';
-        this.orderPrice = '';
-        this.orderDeadline = '';
-        this.orderPlace = '';
-        this.orderSkills = [];
+        if(result.data.status === 'success') {
+          this.orderName = '';
+          this.orderDesc = '';
+          this.orderPrice = '';
+          this.orderDeadline = '';
+          this.orderPlace = '';
+          this.orderSkills = [];
+          this.isAddingActive = !this.isAddingActive;
+        }
       },
       async getInfoAboutUser() {
         const url = new URL('http://62.109.10.224:500/api/account/data/');
@@ -227,7 +240,7 @@
     },
     mounted() {
       this.getInfoAboutUser();
-      this.getAllExecutors(); 
+      this.getAllOrders(); 
     },
     components: {
       HeaderComp,

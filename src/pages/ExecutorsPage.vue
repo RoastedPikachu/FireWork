@@ -124,7 +124,7 @@
           this.isExecutor = !result.data.is_customer;
         } 
       },
-      async sendMessage(id:any) {
+      async sendMessage(id:number) {
         const url = new URL('http://62.109.10.224:500/api/account/newNotify/');
 
         const payload = {

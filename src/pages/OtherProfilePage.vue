@@ -95,26 +95,26 @@
         {
           id: 0,
           description: 'Сделал что-то круто и быстро',
-          author: 'Виталий Печёнкин',
+          author: 'Андрей Бочёнкин',
           mark: '5.2/10'
         },
         {
           id: 1,
-          description: 'Сделал что-то круто и быстро',
-          author: 'Виталий Печёнкин',
-          mark: '5.2/10'
+          description: 'Сделал что-то дёшево и красиво',
+          author: 'Пётр III',
+          mark: '6.7/10'
         },
         {
           id: 2,
-          description: 'Сделал что-то круто и быстро',
-          author: 'Виталий Печёнкин',
-          mark: '5.2/10'
+          description: 'Сделал что-то плохо и дорого',
+          author: 'Вано Горшкович',
+          mark: '2.1/10'
         },
         {
           id: 3,
-          description: 'Сделал что-то круто и быстро',
-          author: 'Виталий Печёнкин',
-          mark: '5.2/10'
+          description: 'Не сделал ничего',
+          author: 'Иннокентий Петров',
+          mark: '0/10'
         },
       ]);
       const isExecutor = ref(false);
@@ -153,6 +153,9 @@
           this.description = result.data.profile.description;
           this.userName = `${result.data.name} ${result.data.surname}`;
           this.isExecutor = !result.data.is_customer;
+          if(!this.isExecutor) {
+            this.reviews.forEach((item) => item.author = `${result.data.name} ${result.data.surname}`);
+          }
           this.generalData = result.data.profile.description;
           this.portfolioData = result.data.portfolio.data;
         } 
@@ -161,7 +164,7 @@
     mounted() {
       setInterval(() => {
         this.getInfoAboutUserById();
-      }, 5000);
+      }, 1000);
       setInterval(() => {
         if(this.isExecutor) {
           this.heading = 'Мои навыки';

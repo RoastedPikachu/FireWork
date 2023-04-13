@@ -136,9 +136,10 @@
       }
     },
     mounted() {
+      this.getAllMessages();
       setInterval(() => {
         this.getAllMessages();
-      }, 500);
+      }, 15000);
     },
     components: {
       HeaderComp,

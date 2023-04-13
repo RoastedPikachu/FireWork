@@ -1,7 +1,7 @@
 <template>
   <div id="Notifications">
     <div id="Notification_wrapper">
-      <div v-for="notif of notifications" :key="notif.id">{{ notif.text }}</div>
+      <div v-for="notif of notifications" :key="notif.id">{{ notif.title }}</div>
     </div>
   </div>
 </template>
@@ -9,11 +9,12 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import { ref } from 'vue';
+  import store from '@/store/index';
   import axios from 'axios';
 
   interface Notif {
     id: number,
-    text: string,
+    title: string,
   }
 
   export default defineComponent({
@@ -22,24 +23,18 @@
       const notifications = ref([
         {
           id: 0,
-          text: 'Pelmenidsfsfsfsfsfsf'
+          title: ''
         },
         {
           id: 1,
-          text: 'Pelmenidsfsdsdbdbdb'
-        },
-        {
-          id: 2,
-          text: 'Pelmenidsfsdsdbdbdb'
-        },
-        {
-          id: 3,
-          text: 'Pelmenidsfsdsdbdbdb'
+          title: ''
         },
       ] as Notif[]);
+      const targetId = ref(0);
 
       return {
-        notifications
+        notifications,
+        targetId,
       }
     },
     methods: {
@@ -55,6 +50,11 @@
         console.log(result);
 
         if(result.data.portfolio) {
+          // if(this.targetId == result.data.id) {
+          //   setInterval(() => {
+          //     this.notifications = store.state.notifications;
+          //   }, 500);
+          // } 
           this.notifications = Object.values(result.data.notify);
         } 
       }
@@ -63,6 +63,9 @@
       setInterval(() => {
         this.getInfoAboutUser();
       }, 500);
+      // setInterval(() => {
+      //   this.targetId = store.state.targetId;
+      // }, 500);
     }
   })
 </script>
