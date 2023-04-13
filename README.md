@@ -1,24 +1,9 @@
-# fire_work
+# FireWork
 
-## Project setup
-```
-npm install
-```
+Наш слоган: 'Чтобы ваши дедлайне не сгорели'
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Это сервис для безопасного взаимодействия исполнителей и заказчиков.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Заказчики предоставляют задание, а исполнители за определённую плату выполняют его
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Код сайта пока сырой, но планируется рефакторинг и доработка
