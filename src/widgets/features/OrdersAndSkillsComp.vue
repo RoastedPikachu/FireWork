@@ -83,7 +83,7 @@
           if(this.skills) {
             this.targetSkills = this.skills as [];
           }
-        }, 1000);
+        }, 500);
       } else {
         setInterval(() => {
           if(this.skills) {

@@ -105,7 +105,7 @@
 
         const payload = {
           token: document.cookie.slice(261),
-          chat_id: 4,
+          chat_id: window.location.pathname.slice(6),
         }
 
         const result = await axios.post(url.toString(), payload, {
@@ -138,7 +138,7 @@
     mounted() {
       setInterval(() => {
         this.getAllMessages();
-      }, 10000);
+      }, 500);
     },
     components: {
       HeaderComp,

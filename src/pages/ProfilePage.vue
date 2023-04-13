@@ -163,9 +163,15 @@
       }
     },
     mounted() {
-      setInterval(() => {
-        this.getInfoAboutUser();
-      }, 5000)
+      if(this.isEdit) {
+        setInterval(() => {
+          this.getInfoAboutUser();
+        }, 15000)
+      } else {
+        setInterval(() => {
+          this.getInfoAboutUser();
+        }, 500)
+      }
       setInterval(() => {
         if(this.isExecutor) {
           this.heading = 'Мои навыки';

@@ -46,8 +46,8 @@
           <p>Оплата: 100$</p>
           <p>Требуется: </p> <p v-for="skill of Object.values(customer.skills)" :key="skill.id">{{ skill.title }}</p>
         </div>
-        <button>
-          <p>Предложить задачу</p>
+        <button @click="sendMessage(customer.id)">
+          <p>Предложить услуги</p>  
           <img src="@/assets/arrow_icon.svg" alt="Стрелочка"> 
         </button>
       </div>
@@ -57,7 +57,7 @@
 
 <script lang="ts">
   import { defineComponent } from 'vue';
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import HeaderComp from '@/widgets/shared/HeaderComp.vue';
   import SortingComp from '@/widgets/shared/SortingComp.vue';
@@ -172,6 +172,20 @@
           }
         }
       },
+      async sendMessage(id:number) {
+        const url = new URL('http://62.109.10.224:500/api/account/newNotify/');
+
+        const payload = {
+          title: 'Ваш заказ готовы принять',
+          to_user: id
+        }
+
+        const result = await axios.post(url.toString(), payload, {
+          headers: {'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        console.log(result);
+      },
       async addOrder() {
         const url = new URL('http://62.109.10.224:500/api/task/create/');
 
@@ -181,7 +195,7 @@
           price: this.orderPrice,
           deadlines: this.orderDeadline,
           place: this.orderPlace,
-          category: this.orderSkills,
+          category: [],
           token: document.cookie.slice(261)
         }
 
@@ -190,6 +204,12 @@
         })
 
         console.log(result);
+        this.orderName = '';
+        this.orderDesc = '';
+        this.orderPrice = '';
+        this.orderDeadline = '';
+        this.orderPlace = '';
+        this.orderSkills = [];
       },
       async getInfoAboutUser() {
         const url = new URL('http://62.109.10.224:500/api/account/data/');

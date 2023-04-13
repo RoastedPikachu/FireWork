@@ -1,6 +1,8 @@
 <template>
   <header>
-    <img src="@/assets/FireWork_logo.svg" alt="FireWork">
+    <router-link to="/" class="routerLogo">
+      <img src="@/assets/FireWork_logo.svg" alt="FireWork">
+    </router-link>
     <div id="inputBlock">
       <img src="@/assets/search_icon.svg" alt="search">
       <input type="text" placeholder="Найти заказчика / исполнителя" v-model="searchValue">
@@ -26,16 +28,17 @@
           <p>&nbsp;Заказы</p>
         </div>
         <div class="linkBlock">
-          <router-link to="/chat" class="routeImg">
+          <router-link :to="`/chat:${userId}`" class="routeImg">
             <img src="@/assets/chat_icon.svg" alt="Сообщения">
           </router-link>
           <p>Сообщения</p>
         </div>
         <div class="linkBlock">
-          <router-link to="/" class="routeImg">
+          <button class="routeImg" @click="changeNotifActive()">
             <img src="@/assets/notifications_icon.svg" alt="Уведомления">
-          </router-link>
+          </button>
           <p>Уведомления</p>
+          <ModalNotifComp v-if="isNotifActive"/>
         </div>
       </span>
     </nav>
@@ -46,6 +49,10 @@
       </router-link>
       <p v-if="isLoaded">{{ firstName }} {{ lastName }}</p>
       <p class="loadedName" v-if="!isLoaded"></p>
+      <button @click="exit()">
+        <i class="fa-solid fa-power-off"></i>
+      </button>
+      <ExitModalComp v-if="isExitActive" @click="closeExit"/>
     </span>
     <span id="Buttons" v-if="!isSignIn">
       <router-link to="/signIn" class="routeText">Вход</router-link>
@@ -60,6 +67,8 @@
   import { ref } from 'vue';
   import axios from 'axios';
   import store from '@/store/index';
+  import ExitModalComp from '@/widgets/shared/ExitModalComp.vue';
+  import ModalNotifComp from '@/widgets/features/ModalNotifComp.vue';
 
   export default defineComponent({
     name: 'HeaderComp', 
@@ -72,6 +81,9 @@
       const firstName = ref('');
       const lastName = ref('');
       const searchValue = ref('');
+      const isExitActive = ref(false);
+      const isNotifActive = ref(false);
+      const userId = ref(0);
       const isSignIn = ref(store.state.isSignIn);
       const isLoaded = ref(false);
 
@@ -79,6 +91,9 @@
         firstName,
         lastName,
         searchValue,
+        isExitActive,
+        isNotifActive,
+        userId,
         isSignIn,
         isLoaded
       }
@@ -95,15 +110,29 @@
 
         if(result.data.portfolio) {
           this.isLoaded = true;
+          this.userId = result.data.id;
           this.firstName = result.data.name;
           this.lastName = result.data.surname;
         } 
+      },
+      exit() {
+        this.isExitActive = !this.isExitActive;
+      },
+      closeExit() {
+        this.isExitActive = false;
+      },
+      changeNotifActive() {
+        this.isNotifActive = !this.isNotifActive;
       }
     },
     mounted() {
       setInterval(() => {
         this.getInfoAboutUser();
-      }, 10000)
+      }, 500)
+    },
+    components: {
+      ExitModalComp,
+      ModalNotifComp
     }
   })
 </script>
@@ -116,10 +145,14 @@
     padding: 0 5%;
     height: 95px;
     background-color: #ffffff;
-    img {
+    .routerLogo {
       width: 10%;
       height: 100%;
-      color: #1e1e1e;
+      img {
+        width: 100%;
+        height: 100%;
+        color: #1e1e1e;
+      }
     }
     #inputBlock {
       display: flex;
@@ -178,6 +211,11 @@
               height: 50%;
             }
           }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
           p {
             margin-top: 5px;
             width: 100%;
@@ -199,6 +237,7 @@
       transform: rotate(90deg)
     }
     #Profile {
+      position: relative;
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -216,11 +255,29 @@
       }
       p {
         margin-left: 10px;
-        width: 82.5%;
+        width: 50%;
         color: #070928;
         font-size: 16px;
         font-weight: 500;
         font-family: 'Roboto', sans-serif;
+      }
+      button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 45px;
+        height: 45px;
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+        i {
+          color: #000000;
+          font-size: 30px;  
+          transition: 400ms ease;
+        }
+        i:hover {
+          color: #ff7d34;
+        }
       }
       .loadedName {
         margin-left: 10px;

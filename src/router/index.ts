@@ -45,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
     component: CustomersPage
   },
   {
-    path: '/chat',
+    path: '/chat:id',
     name: 'chatPage',
     component: ChatPage
   }

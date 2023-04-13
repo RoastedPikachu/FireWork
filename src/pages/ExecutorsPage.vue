@@ -19,7 +19,7 @@
           <p>Средняя цена работы: {{ executor.averagePrice || 100 }}$</p>
           <p>Умеет: </p> <p v-for="skill of Object.values(executor.skills)" :key="skill.id">{{ skill.title }}</p>
         </div>
-        <button>
+        <button @click="sendMessage(executor.id)">
           <p>Предложить задачу</p>
           <img src="@/assets/arrow_icon.svg" alt="Стрелочка"> 
         </button>
@@ -123,7 +123,21 @@
         if(result.data.portfolio) {
           this.isExecutor = !result.data.is_customer;
         } 
-      }
+      },
+      async sendMessage(id:any) {
+        const url = new URL('http://62.109.10.224:500/api/account/newNotify/');
+
+        const payload = {
+          title: 'Вам готовы предложить задачу',
+          user_id: id
+        }
+
+        const result = await axios.post(url.toString(), payload, {
+          headers: {'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        console.log(result);
+      },
     },
     mounted() {
       this.getInfoAboutUser();
